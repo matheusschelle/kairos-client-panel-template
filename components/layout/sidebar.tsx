@@ -14,24 +14,33 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
-const navItems = [
+interface NavItem {
+  href: string
+  label: string
+  icon: LucideIcon
+  tabKey?: string
+}
+
+const allNavItems: NavItem[] = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/conversas', label: 'Conversas', icon: MessageSquare },
-  { href: '/leads', label: 'Leads', icon: Users },
-  { href: '/imoveis', label: 'Imoveis', icon: Building2 },
-  { href: '/matches', label: 'Matches', icon: Link2 },
-  { href: '/relatorios', label: 'Relatorios', icon: BarChart3 },
-  { href: '/configuracoes', label: 'Configuracoes', icon: Settings },
+  { href: '/conversas', label: 'Conversas', icon: MessageSquare, tabKey: 'conversas' },
+  { href: '/leads', label: 'Leads', icon: Users, tabKey: 'leads' },
+  { href: '/imoveis', label: 'Imoveis', icon: Building2, tabKey: 'imoveis' },
+  { href: '/matches', label: 'Matches', icon: Link2, tabKey: 'matches' },
+  { href: '/relatorios', label: 'Relatorios', icon: BarChart3, tabKey: 'relatorios' },
+  { href: '/configuracoes', label: 'Configuracoes', icon: Settings, tabKey: 'configuracoes' },
 ]
 
 interface SidebarProps {
   agentName: string
   clientName: string
   currentMode: string
+  enabledTabs: string[]
 }
 
-export function Sidebar({ agentName, clientName, currentMode }: SidebarProps) {
+export function Sidebar({ agentName, clientName, currentMode, enabledTabs }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -41,6 +50,11 @@ export function Sidebar({ agentName, clientName, currentMode }: SidebarProps) {
     empatico: 'Empatico',
     cordial: 'Cordial',
   }
+
+  const navItems = allNavItems.filter(item => {
+    if (!item.tabKey) return true
+    return enabledTabs.includes(item.tabKey)
+  })
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
